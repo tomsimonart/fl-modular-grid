@@ -64,14 +64,23 @@ def OnIdle():
     set_control_color(cc, reset_intensity=True)
     last_synced = monotonic()
 
+last_hint = None
 def OnRefresh(flags):
-    global last_plugin, synced, idle_synced
+    global last_plugin, synced, idle_synced, last_hint
     plugin = ui.getFocusedPluginName()
     if last_plugin != plugin and plugin != "":
         print("New plugin:", plugin)
         synced.clear()
         idle_synced = idle_synced_default.copy()
         last_plugin = plugin
+    
+    # Display last hint if any, if not done here, value is not updated correctly
+    if last_hint is not None:
+        value_name = device.getLinkedParamName(last_hint[3])
+        value_str = device.getLinkedValueString(last_hint[3])
+        hint_msg = f"{last_hint[0]}CH{last_hint[1]} CC{last_hint[2]} - {value_name}: {value_str}"
+        ui.setHintMsg(hint_msg)
+        last_hint = None
     
     # TODO sync back with controller, currently difficult with fl api
     # if flags & midi.HW_Dirty_RemoteLinkValues:
@@ -148,18 +157,21 @@ def get_next_step(value, steps=3, min_=0, max_=1):
 
 
 def process_linked_params_buttons(msg: 'FlMidiMsg', event_id):
+    global last_hint
     c_map = get_plugin_control(msg.controlNum)
-    name = device.getLinkedParamName(event_id)
     val = device.getLinkedValue(event_id)
 
     if msg.controlVal == 127:
         msg.controlVal = int(get_next_step(val, c_map.button.steps) * 127)
     else:
         msg.handled = True
-        val = device.getLinkedValue(event_id)
-        val_str = device.getLinkedValueString(event_id)
+        set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_button)
         set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_button)
         ui.setHintMsg(f"CH{msg.status & 0xF} CC{msg.controlNum} - {name}: {val_str}")
+    set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_button)
+        ui.setHintMsg(f"CH{msg.status & 0xF} CC{msg.controlNum} - {name}: {val_str}")
+    last_hint = ("", msg.status, msg.controlNum, event_id)
+
 
 def process_linked_params_encoders(msg: 'FlMidiMsg', event_id):
         val_name = device.getLinkedParamName(event_id)
@@ -195,9 +207,8 @@ def process_linked_params_encoders(msg: 'FlMidiMsg', event_id):
         val = device.getLinkedValue(event_id)
         set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_encoder)
 
-        hint_msg = "^w" if inc > 0 else "^v"
-        hint_msg += f"CH{msg.status & 0xF} CC{msg.controlNum} - {val_name}: {val_str}"
-        ui.setHintMsg(hint_msg)
+    hint_status = "^w" if inc > 0 else "^v"
+    last_hint = (hint_status, msg.status, msg.controlNum, event_id)
 
 def set_led(
         channel: int,
