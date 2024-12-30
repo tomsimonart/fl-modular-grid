@@ -34,11 +34,6 @@ except ImportError:
 
 from mapping import Control, LedColor, mapping
 
-CHAN_BUTTON = 1
-CHAN_ENCODER = 2
-LED_LAYER_BUTTON = 1
-LED_LAYER_ENCODER = 2
-
 
 def get_plugin_control(cc) -> Control:
     global mapping, last_plugin
