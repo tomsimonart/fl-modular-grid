@@ -107,7 +107,8 @@ class LedColor:
 
 @dataclass
 class CtrlEncoder():
-    steps: int = 256
+    steps: int = 255
+    accel: bool = True
 
 @dataclass
 class CtrlButton():
@@ -169,7 +170,7 @@ mapping = {
             40: Control(encoder_led=LedColor.blue()),
             41: Control(encoder_led=LedColor.blue()),
             42: Control(encoder_led=LedColor.blue()),
-            43: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=2)),
+            43: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=3)),
             44: Control(encoder_led=LedColor.blue()),
             45: Control(encoder_led=LedColor.blue()),
             46: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=3)),
@@ -180,6 +181,33 @@ mapping = {
             80: Control(button_led=LedColor.white(), button=CtrlButton(steps=2)),
             81: Control(button_led=LedColor.white(), button=CtrlButton(steps=3)),
             83: Control(encoder_led=LedColor.blue()),
+        },
+
+        "Tube-Tech Equalizers mk II": {
+            # Lows
+            32: Control(encoder_led=LedColor.blue()),
+            33: Control(encoder_led=LedColor.blue()),
+            36: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=4, accel=False)),
+            # Mid
+            37: Control(encoder_led=LedColor.cyan()),
+            38: Control(encoder_led=LedColor.cyan(), encoder=CtrlEncoder(steps=10, accel=False)),
+            34: Control(encoder_led=LedColor.cyan()),
+            # Atten
+            35: Control(encoder_led=LedColor.blue()),
+            48: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=3, accel=False)), 
+            # Output Gain
+            52: Control(encoder_led=LedColor.blue(), button_led=LedColor.red(), beautify_button=False),
+            # MEQ Peak L
+            40: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=5, accel=False)), 
+            41: Control(encoder_led=LedColor.blue()), 
+            # MEQ DIP
+            42: Control(encoder_led=LedColor.cyan(), encoder=CtrlEncoder(steps=11, accel=False)), 
+            43: Control(encoder_led=LedColor.cyan()), 
+            # MEQ Peak H
+            56: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=5, accel=False)), 
+            57: Control(encoder_led=LedColor.blue()), 
+            # MEQ Output Gain
+            58: Control(encoder_led=LedColor.blue(), button_led=LedColor.red(), beautify_button=False),
         },
 
         "UADx SSL E Channel Strip": {
@@ -336,6 +364,25 @@ mapping = {
             41: Control(button_led=LedColor.white(), button=CtrlButton(steps=8)),
             42: Control(button_led=LedColor.white(), button=CtrlButton(steps=8)),
             43: Control(button_led=LedColor.white(), button=CtrlButton(steps=6)),
+        },
+
+        "Maag EQ4": {
+            44: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=21, accel=False)),
+            45: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            46: Control(encoder_led=LedColor.green(), encoder=CtrlEncoder(steps=21, accel=False)),
+            47: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            60: Control(encoder_led=LedColor.orange(), encoder=CtrlEncoder(steps=21, accel=False)),
+            61: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=21, accel=False)),
+            62: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=6, accel=False)),
+            63: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=21, accel=False)),
+            80: Control(button_led=LedColor.green()),
+        },
+
+        "SPL PQ": {
+            # L LF
+            32: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
+            36: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
+            40: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
         }
     }
 }

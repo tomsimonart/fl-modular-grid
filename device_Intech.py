@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from time import monotonic
 from typing import Optional
 
+import general
 import midi
 import mixer
 import device
@@ -86,6 +87,11 @@ def OnRefresh(flags):
     # if flags & midi.HW_Dirty_RemoteLinkValues:
         # print(device.getLinkedChannel())
         # TODO get last eventID, from that, find back the midi cc and channel, sync the LED again
+    # def set_parameter_value(self, parameter, value):
+    #     rec_event_parameter = parameter + channels.getRecEventId(channels.selectedChannel())
+    #     value = int(value * midi.FromMIDI_Max)
+    #     mask = midi.REC_MIDIController
+    #     general.processRECEvent(rec_event_parameter, value, mask)
 
 def get_mapped_event_id(msg: 'FlMidiMsg') -> Optional[int]:
     return get_mapped_event_id_raw(device.getPortNumber(), msg.status & 0xF, msg.controlNum)
@@ -144,68 +150,95 @@ def port_13(msg: 'FlMidiMsg'):
         set_led(midiChan, msg.controlNum, 0)
         ui.setHintMsg(f"CH{midiChan} CC{msg.controlNum} - Not assigned")
 
-def get_next_step(value, steps=3, min_=0, max_=1):
-    """Get the next step for a stepped button."""
-    step_diff = (max_ - min_) / steps
-    step_offset = step_diff / 2
-    for i in range(steps):
-        ceiling = (i + 1) * step_diff
-        if value <= ceiling:
-            next_value = ((step_diff * (i + 1)) + step_offset) % 1.0
-            print("next =", next_value)
-            return next_value
-
-
 def process_linked_params_buttons(msg: 'FlMidiMsg', event_id):
     global last_hint
     c_map = get_plugin_control(msg.controlNum)
     val = device.getLinkedValue(event_id)
 
     if msg.controlVal == 127:
-        msg.controlVal = int(get_next_step(val, c_map.button.steps) * 127)
-    else:
-        msg.handled = True
-        set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_button)
-        set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_button)
-        ui.setHintMsg(f"CH{msg.status & 0xF} CC{msg.controlNum} - {name}: {val_str}")
+        new_value = get_relative_step(val, c_map.button.steps, 1, rollover=True)
+        general.processRECEvent(event_id, int(new_value * midi.FromMIDI_Max), midi.REC_MIDIController)
+    msg.handled = True
     set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_button)
-        ui.setHintMsg(f"CH{msg.status & 0xF} CC{msg.controlNum} - {name}: {val_str}")
     last_hint = ("", msg.status, msg.controlNum, event_id)
 
+def get_relative_step(value: float, steps: int, speed: int, min_: float = 0.0, max_: float = 1.0, rollover=False) -> float:
+    """Get the value at step diff for an encoder or button. Rollover disables clamp between min and max mode."""
+    R_STEP_PRECISION = 5
+    step_diff = (max_ - min_) / (steps - 1)
+    # Get current step
+    current_step = 0
+    LOOP_MAX = 4095
+    loop_n = 0
+    value = round(value, R_STEP_PRECISION)
+    while value > round(step_diff * current_step, R_STEP_PRECISION):
+        if loop_n == LOOP_MAX:  # Avoid infinite loops
+            raise Exception("Infinite loop in stepper")
+        current_step += 1
+        loop_n += 1 
+    
+    if rollover and current_step + speed >= steps:
+        speed = -1 * (current_step + speed - 1)
+    elif current_step + speed >= steps:
+        speed = steps - current_step - 1
+    elif current_step + speed < 0:
+        speed = 0 - current_step
+    clamped_value = round((current_step + speed) * step_diff, R_STEP_PRECISION)
+    return clamped_value
 
+anti_ghost = monotonic()
+anti_ghost_direction = 0  # -1 = counter clockwise, 1 = clockwise
+ANTI_GHOST_DELAY = 0.1
 def process_linked_params_encoders(msg: 'FlMidiMsg', event_id):
-        val_name = device.getLinkedParamName(event_id)
-        val_str = device.getLinkedValueString(event_id)
-
-        msg_val = msg.controlVal
-        if msg_val < 64:
-            inc = -1
-            speed = -(64 - msg_val)
-        else:
-            inc = 1
-            speed = msg_val - 64
-        
+    global anti_ghost, anti_ghost_direction, last_hint
+    c_map = get_plugin_control(msg.controlNum)
+    msg_val = msg.controlVal
+    if msg_val < 64:
+        inc = -1
+        speed = -(64 - msg_val)
+    else:
+        inc = 1
+        speed = msg_val - 64
+    
+    if inc == 0:
         msg.handled = True
-        if inc == 0:
-            return
-        
-        c_map = get_plugin_control(msg.controlNum)
-        try:
+        return
+    
+    # Filter unwanted kickbacks / ghost movements
+    if anti_ghost_direction != inc and monotonic() < anti_ghost + ANTI_GHOST_DELAY:
+        msg.handled = True
+        return
+    anti_ghost = monotonic()
+    anti_ghost_direction = inc
+
+    if c_map.encoder.accel:
+        diff = speed
+    else:
+        diff = inc
+    try:
+        if c_map.encoder.steps >= 255:
             mixer.automateEvent(
                 event_id,
-                speed,
+                diff,
                 midi.REC_MIDIController,
                 0,
                 1,
-                res=1/c_map.encoder.steps,
+                res=1 / (c_map.encoder.steps - 1),
             )
-        except RuntimeError:
-            msg.handled = False
-            hint_msg = f"CH{msg.status & 0xF} CC{msg.controlNum} - Operation Unsafe"
-            ui.setHintMsg(hint_msg)
-            return
-        val = device.getLinkedValue(event_id)
-        set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_encoder)
+            msg.handled = True
+        else:  # Stepped mode
+            val = device.getLinkedValue(event_id)
+            new_value = get_relative_step(val, c_map.encoder.steps, diff)
+            general.processRECEvent(event_id, int(new_value * midi.FromMIDI_Max), midi.REC_MIDIController)
+            msg.handled = True
+    except RuntimeError:
+        msg.handled = False
+        hint_msg = f"CH{msg.status & 0xF} CC{msg.controlNum} - Operation Unsafe"
+        ui.setHintMsg(hint_msg)
+        return
+    
+    val = device.getLinkedValue(event_id)
+    set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_encoder)
 
     hint_status = "^w" if inc > 0 else "^v"
     last_hint = (hint_status, msg.status, msg.controlNum, event_id)
@@ -217,6 +250,7 @@ def set_led(
         rgb: Optional[tuple[float, float, float]] = None,
         beautify: bool = False
     ):
+    print(beautify, intensity)
     BEAUTIFY_CEIL = 115
     if beautify:
         intensity = int(intensity * BEAUTIFY_CEIL) + 127 - BEAUTIFY_CEIL
