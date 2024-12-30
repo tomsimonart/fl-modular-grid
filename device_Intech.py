@@ -250,7 +250,6 @@ def set_led(
         rgb: Optional[tuple[float, float, float]] = None,
         beautify: bool = False
     ):
-    print(beautify, intensity)
     BEAUTIFY_CEIL = 115
     if beautify:
         intensity = int(intensity * BEAUTIFY_CEIL) + 127 - BEAUTIFY_CEIL
