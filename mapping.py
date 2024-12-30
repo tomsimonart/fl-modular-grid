@@ -109,6 +109,7 @@ class LedColor:
 class CtrlEncoder():
     steps: int = 255
     accel: bool = True
+    invert: bool = False
 
 @dataclass
 class CtrlButton():
@@ -214,12 +215,6 @@ mapping = {
             # Line & Mic
             32: Control(button_led=LedColor.white(), encoder_led=LedColor.white(), beautify_button=False),
             33: Control(button_led=LedColor.white()),
-        },
-
-        "UADx SSL E Channel Strip": {
-            # Line & Mic
-            32: Control(button_led=LedColor.white(), encoder_led=LedColor.white(), beautify_button=False),
-            33: Control(button_led=LedColor.white()),
             36: Control(button_led=LedColor.grey(), encoder_led=LedColor.red(), beautify_button=False),
             37: Control(button_led=LedColor.red()),
             # Dynamics (comp)
@@ -265,24 +260,24 @@ mapping = {
             # Left / Mid
             32: Control(button_led=LedColor(1, 1, 0.5)),
             33: Control(encoder_led=LedColor.yellow()),
-            34: Control(encoder_led=LedColor.yellow()),
-            35: Control(encoder_led=LedColor.yellow()),
-            48: Control(encoder_led=LedColor.yellow()),
+            34: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
+            35: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
+            48: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
             49: Control(encoder_led=LedColor.yellow()),
             50: Control(encoder_led=LedColor.white()),
             51: Control(encoder_led=LedColor.white()),
-            54: Control(encoder_led=LedColor.yellow()),
+            54: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
             55: Control(encoder_led=LedColor.yellow()),
             # Right / Side
             40: Control(button_led=LedColor(1, 1, 0.5)),
             41: Control(encoder_led=LedColor.yellow()),
-            42: Control(encoder_led=LedColor.yellow()),
-            43: Control(encoder_led=LedColor.yellow()),
-            56: Control(encoder_led=LedColor.yellow()),
+            42: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
+            43: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
+            56: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
             57: Control(encoder_led=LedColor.yellow()),
             58: Control(encoder_led=LedColor.white()),
             59: Control(encoder_led=LedColor.white()),
-            62: Control(encoder_led=LedColor.yellow()),
+            62: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
             63: Control(encoder_led=LedColor.yellow()), 
             # Side panel
             44: Control(button_led=LedColor.white()),
@@ -383,6 +378,36 @@ mapping = {
             32: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
             36: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
             40: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
-        }
+        },
+
+        ### Synths
+
+        "Acid V": {
+            # Top row
+            32: Control(button_led=LedColor.white()),
+            33: Control(encoder_led=LedColor.lime(), encoder=CtrlEncoder(steps=25, accel=False)),
+            34: Control(encoder_led=LedColor.lime(), encoder=CtrlEncoder(steps=32, accel=False)),
+            35: Control(encoder_led=LedColor.lime(), encoder=CtrlEncoder(steps=32, accel=False)),
+            48: Control(encoder_led=LedColor.lime(), encoder=CtrlEncoder(steps=32, accel=False)),
+            49: Control(encoder_led=LedColor.lime(), encoder=CtrlEncoder(steps=32, accel=False)),
+            50: Control(encoder_led=LedColor.lime(), encoder=CtrlEncoder(steps=32, accel=False)),
+            # Mid row
+            36: Control(encoder_led=LedColor.lime(), encoder=CtrlEncoder(steps=3, accel=False, invert=True)),
+            37: Control(encoder_led=LedColor.lime(), encoder=CtrlEncoder(steps=3, accel=False, invert=True)),
+            38: Control(encoder_led=LedColor.lime()),
+            39: Control(encoder_led=LedColor.lime()),
+            52: Control(encoder_led=LedColor.lime()),
+            53: Control(encoder_led=LedColor.lime()),
+            54: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=14, accel=False)),
+            55: Control(encoder_led=LedColor.lime()),
+            # Advanced
+            45: Control(encoder_led=LedColor.green()),
+            46: Control(encoder_led=LedColor.green()),
+            47: Control(encoder_led=LedColor.green()),
+            60: Control(encoder_led=LedColor.green()),
+            61: Control(encoder_led=LedColor.green()),
+            62: Control(encoder_led=LedColor.green()),
+            63: Control(encoder_led=LedColor.green()),
+        },
     }
 }

@@ -187,10 +187,11 @@ def get_relative_step(value: float, steps: int, speed: int, min_: float = 0.0, m
     return clamped_value
 
 anti_ghost = monotonic()
+anti_ghost_cc = None
 anti_ghost_direction = 0  # -1 = counter clockwise, 1 = clockwise
 ANTI_GHOST_DELAY = 0.1
 def process_linked_params_encoders(msg: 'FlMidiMsg', event_id):
-    global anti_ghost, anti_ghost_direction, last_hint
+    global anti_ghost, anti_ghost_direction, anti_ghost_cc, last_hint
     c_map = get_plugin_control(msg.controlNum)
     msg_val = msg.controlVal
     if msg_val < 64:
@@ -205,16 +206,20 @@ def process_linked_params_encoders(msg: 'FlMidiMsg', event_id):
         return
     
     # Filter unwanted kickbacks / ghost movements
-    if anti_ghost_direction != inc and monotonic() < anti_ghost + ANTI_GHOST_DELAY:
+    if anti_ghost_direction != inc and monotonic() < anti_ghost + ANTI_GHOST_DELAY and msg.controlVal == anti_ghost_cc:
         msg.handled = True
         return
     anti_ghost = monotonic()
     anti_ghost_direction = inc
+    anti_ghost_cc = msg.controlVal
 
     if c_map.encoder.accel:
         diff = speed
     else:
         diff = inc
+    
+    if c_map.encoder.invert:
+        diff = -diff
     try:
         if c_map.encoder.steps >= 255:
             mixer.automateEvent(
