@@ -121,14 +121,20 @@ def set_control_color(cc: int, reset_intensity: bool = False):
     button_event = get_mapped_event_id_raw(device.getPortNumber(), 1, cc) 
     if button_event is not None:
         color = c_map.button_led
-        set_led(1, cc, device.getLinkedValue(button_event), rgb=color.rgb, beautify=True)
+        intensity = device.getLinkedValue(button_event)
+        if c_map.button.invert_intensity:
+            intensity = 1 - intensity
+        set_led(1, cc, intensity, rgb=color.rgb, beautify=True)
     else:
         set_led(1, cc, 0)
 
     encoder_event = get_mapped_event_id_raw(device.getPortNumber(), 2, cc)
     if encoder_event is not None:
         color = c_map.encoder_led
-        set_led(2, cc, device.getLinkedValue(encoder_event), rgb=color.rgb, beautify=True)
+        intensity = device.getLinkedValue(encoder_event)
+        if c_map.encoder.invert_intensity:
+            intensity = 1 - intensity
+        set_led(2, cc, intensity, rgb=color.rgb, beautify=True)
     else:
         set_led(2, cc, 0) 
 
@@ -153,13 +159,16 @@ def port_13(msg: 'FlMidiMsg'):
 def process_linked_params_buttons(msg: 'FlMidiMsg', event_id):
     global last_hint
     c_map = get_plugin_control(msg.controlNum)
-    val = device.getLinkedValue(event_id)
 
+    val = device.getLinkedValue(event_id)
     if msg.controlVal == 127:
         new_value = get_relative_step(val, c_map.button.steps, 1, rollover=True)
         general.processRECEvent(event_id, int(new_value * midi.FromMIDI_Max), midi.REC_MIDIController)
     msg.handled = True
-    set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_button)
+    intensity = val
+    if c_map.button.invert_intensity:
+        intensity = 1 - intensity
+    set_led(msg.status & 0xF, msg.controlNum, intensity, beautify=c_map.beautify_button)
     last_hint = ("", msg.status, msg.controlNum, event_id)
 
 def get_relative_step(value: float, steps: int, speed: int, min_: float = 0.0, max_: float = 1.0, rollover=False) -> float:
@@ -189,7 +198,7 @@ def get_relative_step(value: float, steps: int, speed: int, min_: float = 0.0, m
 anti_ghost = monotonic()
 anti_ghost_cc = None
 anti_ghost_direction = 0  # -1 = counter clockwise, 1 = clockwise
-ANTI_GHOST_DELAY = 0.1
+ANTI_GHOST_DELAY = 0.13
 def process_linked_params_encoders(msg: 'FlMidiMsg', event_id):
     global anti_ghost, anti_ghost_direction, anti_ghost_cc, last_hint
     c_map = get_plugin_control(msg.controlNum)
@@ -206,12 +215,12 @@ def process_linked_params_encoders(msg: 'FlMidiMsg', event_id):
         return
     
     # Filter unwanted kickbacks / ghost movements
-    if anti_ghost_direction != inc and monotonic() < anti_ghost + ANTI_GHOST_DELAY and msg.controlVal == anti_ghost_cc:
+    if anti_ghost_direction != inc and monotonic() < anti_ghost + ANTI_GHOST_DELAY and msg.controlNum == anti_ghost_cc:
         msg.handled = True
         return
     anti_ghost = monotonic()
     anti_ghost_direction = inc
-    anti_ghost_cc = msg.controlVal
+    anti_ghost_cc = msg.controlNum
 
     if c_map.encoder.accel:
         diff = speed
@@ -243,7 +252,10 @@ def process_linked_params_encoders(msg: 'FlMidiMsg', event_id):
         return
     
     val = device.getLinkedValue(event_id)
-    set_led(msg.status & 0xF, msg.controlNum, val, beautify=c_map.beautify_encoder)
+    intensity = val
+    if c_map.encoder.invert_intensity:
+        intensity = 1 - intensity
+    set_led(msg.status & 0xF, msg.controlNum, intensity, beautify=c_map.beautify_encoder)
 
     hint_status = "^w" if inc > 0 else "^v"
     last_hint = (hint_status, msg.status, msg.controlNum, event_id)
@@ -255,7 +267,7 @@ def set_led(
         rgb: Optional[tuple[float, float, float]] = None,
         beautify: bool = False
     ):
-    BEAUTIFY_CEIL = 115
+    BEAUTIFY_CEIL = 114
     if beautify:
         intensity = int(intensity * BEAUTIFY_CEIL) + 127 - BEAUTIFY_CEIL
     else:
