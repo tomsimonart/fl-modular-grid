@@ -48,6 +48,14 @@ p2 = midi.p2
 
 Then, under the `locals` block in the `Midi rx`, declare a new code block and insert the contents of the [script](grid_script.lua).
 
+### Encoder
+
+![encoder - system setup screen capture](encoder_system.png)
+
+![encoder - button setup screen capture](encoder_button.png)
+
+![encoder - encoder setup screen capture](encoder_encoder.png)
+
 # Mapping
 
 In the `mapping.py` file, there is a mapping for plugins.
