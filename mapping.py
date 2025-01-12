@@ -110,10 +110,12 @@ class CtrlEncoder():
     steps: int = 255
     accel: bool = True
     invert: bool = False
+    invert_intensity: bool = False
 
 @dataclass
 class CtrlButton():
     steps: int = 2
+    invert_intensity: bool = False
 
 @dataclass
 class Control:
@@ -162,7 +164,7 @@ mapping = {
             # Balance, Output, in/ext, dry/wet
             51: Control(encoder_led=LedColor.blue()),
             55: Control(encoder_led=LedColor.blue()),
-            59: Control(button_led=LedColor.white()),
+            59: Control(button_led=LedColor.red(), button=CtrlButton(invert_intensity=True)),
             63: Control(encoder_led=LedColor.blue()),
         },
 
@@ -256,6 +258,56 @@ mapping = {
             56: Control(encoder_led=LedColor.white()),
             60: Control(encoder_led=LedColor.white()),
         },
+
+        "UADx API Vision Channel Strip": {
+            # 212L
+            32: Control(encoder_led=LedColor.red(), button_led=LedColor.red(), beautify_button=False),
+            36: Control(encoder_led=LedColor.green(), button_led=LedColor.green(), beautify_button=False),
+            40: Control(button_led=LedColor.red()),
+            44: Control(button_led=LedColor.green()),
+            # 215L
+            80: Control(encoder_led=LedColor.orange()),
+            84: Control(button_led=LedColor.green()),
+            88: Control(encoder_led=LedColor.orange()),
+            92: Control(button_led=LedColor.green()),
+            # 235L
+            33: Control(encoder_led=LedColor.yellow(), button_led=LedColor.white(), button=CtrlButton(steps=3)),
+            37: Control(encoder_led=LedColor.white(), button_led=LedColor.white()),
+            41: Control(encoder_led=LedColor.white(), button_led=LedColor.white()),
+            45: Control(button_led=LedColor.green()),
+            # 225L
+            81: Control(encoder_led=LedColor.red(), button_led=LedColor.white(), button=CtrlButton(steps=3)),
+            85: Control(encoder_led=LedColor.teal(), button_led=LedColor.white()),
+            89: Control(encoder_led=LedColor.white(), button_led=LedColor.white()),
+            93: Control(button_led=LedColor.green()),
+            # 550L
+            34: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=11)),
+            38: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7), button_led=LedColor.cyan()),
+            42: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=11)),
+            46: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7)),
+            82: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=11)),
+            86: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7), button_led=LedColor.cyan()),
+            90: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=11), button_led=LedColor.green()),
+            94: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7), button_led=LedColor.green()),
+            91: Control(button_led=LedColor.green()),
+            95: Control(button_led=LedColor.green()),
+            # 560L
+            35: Control(encoder_led=LedColor.white()),
+            39: Control(encoder_led=LedColor.white()),
+            43: Control(encoder_led=LedColor.white()),
+            47: Control(encoder_led=LedColor.white()),
+            83: Control(encoder_led=LedColor.red()),
+            87: Control(encoder_led=LedColor.white()),
+            48: Control(encoder_led=LedColor.white()),
+            52: Control(encoder_led=LedColor.white()),
+            56: Control(encoder_led=LedColor.white()),
+            60: Control(encoder_led=LedColor.white()),
+            # Fader
+            53: Control(encoder_led=LedColor.white()),
+            57: Control(button_led=LedColor.orange()),
+            61: Control(button_led=LedColor.red()),
+        },
+
         "Chandler Limited Germanium Comp": {
             # Left / Mid
             32: Control(button_led=LedColor(1, 1, 0.5)),
@@ -287,6 +339,129 @@ mapping = {
             60: Control(button_led=LedColor.cyan()),
             61: Control(button_led=LedColor.cyan()),
             83: Control(encoder_led=LedColor.yellow()),
+        },
+
+        "UADx SSL G Bus Compressor": {
+            32: Control(encoder_led=LedColor.white()),
+            33: Control(encoder_led=LedColor.white()),
+            36: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=6, accel=False)),
+            37: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=5, accel=False)),
+            40: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=3, accel=False)),
+            41: Control(button_led=LedColor.yellow()),
+            44: Control(encoder_led=LedColor.white()),
+            45: Control(encoder_led=LedColor.white()),
+            80: Control(encoder_led=LedColor.white()),
+            81: Control(button_led=LedColor.yellow()),
+        },
+        
+        "UADx 1176AE Compressor": {
+            40: Control(encoder_led=LedColor.white()),
+            41: Control(encoder_led=LedColor.white()),
+            42: Control(encoder_led=LedColor.purple()),
+            46: Control(encoder_led=LedColor.purple(), button_led=LedColor.yellow(), beautify_button=False),
+            43: Control(button_led=LedColor.white(), button=CtrlButton(steps=11)),
+            56: Control(button_led=LedColor.white(), button=CtrlButton(steps=4)),
+            60: Control(button_led=LedColor.yellow()),
+            # HR / Mix
+            37: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=7, accel=False)),
+            45: Control(encoder_led=LedColor.yellow()),
+        },
+
+        "UADx 1176 Rev A Compressor": {
+            40: Control(encoder_led=LedColor.white()),
+            41: Control(encoder_led=LedColor.white()),
+            42: Control(encoder_led=LedColor.purple()),
+            46: Control(encoder_led=LedColor.purple(), button_led=LedColor.yellow(), beautify_button=False),
+            43: Control(button_led=LedColor.white(), button=CtrlButton(steps=11)),
+            56: Control(button_led=LedColor.white(), button=CtrlButton(steps=4)),
+            60: Control(button_led=LedColor.yellow()),
+            # HR / Mix
+            37: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=7, accel=False)),
+            45: Control(encoder_led=LedColor.yellow()),
+        },
+
+        "UADx 1176LN Rev E Compressor": {
+            40: Control(encoder_led=LedColor.white()),
+            41: Control(encoder_led=LedColor.white()),
+            42: Control(encoder_led=LedColor.purple()),
+            46: Control(encoder_led=LedColor.purple(), button_led=LedColor.yellow(), beautify_button=False),
+            43: Control(button_led=LedColor.white(), button=CtrlButton(steps=11)),
+            56: Control(button_led=LedColor.white(), button=CtrlButton(steps=4)),
+            60: Control(button_led=LedColor.yellow()),
+            # HR / Mix
+            37: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=7, accel=False)),
+            45: Control(encoder_led=LedColor.yellow()),
+        },
+
+        "UADx LA-2 Compressor": {
+            40: Control(encoder_led=LedColor.yellow()),
+            41: Control(encoder_led=LedColor.yellow()),
+            42: Control(encoder_led=LedColor.white()),
+            43: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=3, accel=False)),
+            56: Control(encoder_led=LedColor.white()),
+            57: Control(button_led=LedColor.red()),
+        },
+
+        "UADx LA-2A Gray Compressor": {
+            40: Control(button_led=LedColor.red()),
+            41: Control(encoder_led=LedColor.red()),
+            42: Control(encoder_led=LedColor.white()),
+            43: Control(encoder_led=LedColor.yellow()),
+            56: Control(encoder_led=LedColor.white()),
+            53: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=3, accel=False)),
+            57: Control(button_led=LedColor.red()),
+        },
+
+        "UADx LA-2A Silver Compressor": {
+            40: Control(button_led=LedColor.blue()),
+            41: Control(encoder_led=LedColor.blue()),
+            42: Control(encoder_led=LedColor.white()),
+            43: Control(encoder_led=LedColor.blue()),
+            56: Control(encoder_led=LedColor.white()),
+            53: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=3, accel=False)),
+            57: Control(button_led=LedColor.red()),
+        },
+
+        "UADx API 2500 Bus Compressor": {
+            # Power / Mix
+            37: Control(button_led=LedColor.yellow()),
+            38: Control(encoder_led=LedColor.white()),
+            # Compressor
+            40: Control(encoder_led=LedColor.white()),
+            41: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7, accel=False)),
+            42: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7, accel=False)),
+            43: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7, accel=False)),
+            56: Control(encoder_led=LedColor.white()),
+            # Source / Headroom
+            54: Control(button_led=LedColor.white()),
+            55: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=7, accel=False)),
+            # Tone
+            57: Control(button_led=LedColor.white(), button=CtrlButton(steps=3)),
+            58: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            59: Control(button_led=LedColor.white()),
+            # Link
+            46: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=7, accel=False)),
+            47: Control(button_led=LedColor.green(), button=CtrlButton(steps=4)),
+            # Output
+            60: Control(button_led=LedColor.white()),
+            61: Control(button_led=LedColor.white()),
+            62: Control(button_led=LedColor.red()),
+            63: Control(encoder_led=LedColor.red()), 
+        },
+
+        "UADx dbx 160 Compressor": {
+            40: Control(encoder_led=LedColor.yellow()), 
+            41: Control(encoder_led=LedColor.yellow()), 
+            42: Control(encoder_led=LedColor.yellow()), 
+            44: Control(button_led=LedColor.white()),
+            45: Control(button_led=LedColor.white()),
+            47: Control(encoder_led=LedColor.white()), 
+        },
+
+        "UADx Verve Analog Machines": {
+            44: Control(encoder_led=LedColor.white()),
+            45: Control(encoder_led=LedColor.white()),
+            46: Control(encoder_led=LedColor.white()),
         },
 
         "NFuse": {
@@ -361,6 +536,172 @@ mapping = {
             43: Control(button_led=LedColor.white(), button=CtrlButton(steps=6)),
         },
 
+        "UADx Manley Variable Mu Compressor": {
+            # L side
+            44: Control(button_led=LedColor.white()),
+            45: Control(button_led=LedColor.white()),
+            46: Control(button_led=LedColor.white()),
+            42: Control(button_led=LedColor.white()),
+            # Mid
+            43: Control(button_led=LedColor.yellow()),
+            36: Control(button_led=LedColor.pink()),
+            54: Control(button_led=LedColor.pink()),
+            # R side
+            56: Control(button_led=LedColor.white()),
+            60: Control(button_led=LedColor.white()),
+            61: Control(button_led=LedColor.white()),
+            62: Control(button_led=LedColor.white()),
+            # Main L + R
+            33: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=5, accel=False)),
+            34: Control(encoder_led=LedColor.purple()),
+            35: Control(encoder_led=LedColor.purple()),
+            48: Control(encoder_led=LedColor.purple()),
+            49: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=5, accel=False)),
+            37: Control(encoder_led=LedColor.purple()),
+            38: Control(encoder_led=LedColor.purple()),
+            39: Control(encoder_led=LedColor.purple()),
+            52: Control(encoder_led=LedColor.purple()),
+            53: Control(encoder_led=LedColor.purple()),
+            # Headroom
+            83: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=9, accel=False)),
+        },
+
+        "UADx Manley Massive Passive EQ": {
+            # Top
+            32: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            33: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            34: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            35: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            48: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            49: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            50: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            51: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            # dB & Shelf bell
+            36: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple()),
+            37: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple()),
+            38: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple()),
+            39: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple()),
+            52: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple()),
+            53: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple()),
+            54: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple()),
+            55: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple()),
+            # Bandwidth
+            40: Control(encoder_led=LedColor.purple()),
+            41: Control(encoder_led=LedColor.purple()),
+            42: Control(encoder_led=LedColor.purple()),
+            43: Control(encoder_led=LedColor.purple()),
+            56: Control(encoder_led=LedColor.purple()),
+            57: Control(encoder_led=LedColor.purple()),
+            58: Control(encoder_led=LedColor.purple()),
+            59: Control(encoder_led=LedColor.purple()),
+            # Freq
+            44: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            45: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            46: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            47: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            60: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            61: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            62: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            63: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            # Mid panel
+            80: Control(button_led=LedColor.blue()),
+            81: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=2, accel=False)),
+            82: Control(button_led=LedColor.blue()),
+            85: Control(button_led=LedColor.white()),
+            84: Control(encoder_led=LedColor.purple()),
+            86: Control(encoder_led=LedColor.purple()),
+            88: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=6, accel=False)),
+            90: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=6, accel=False)),
+            92: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=6, accel=False)),
+            94: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=6, accel=False)),
+        },
+
+        "UADx Manley Massive Passive MST": {
+            # Top
+            32: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            33: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            34: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            35: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            48: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            49: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            50: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            51: Control(button_led=LedColor.pink(), button=CtrlButton(steps=3)),
+            # dB & Shelf bell
+            36: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            37: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            38: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            39: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            52: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            53: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            54: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            55: Control(button_led=LedColor(r=0.5, g=0.2, b=0.0), encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            # Bandwidth
+            40: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            41: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            42: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            43: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            56: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            57: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            58: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            59: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=16)),
+            # Freq
+            44: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            45: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            46: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            47: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            60: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            61: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            62: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            63: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            # Mid panel
+            80: Control(button_led=LedColor.blue()),
+            81: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=2, accel=False)),
+            82: Control(button_led=LedColor.blue()),
+            85: Control(button_led=LedColor.white()),
+            84: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            86: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=11, accel=False)),
+            88: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=6, accel=False)),
+            90: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=6, accel=False)),
+            92: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=6, accel=False)),
+            94: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=6, accel=False)),
+        },
+
+        "UADx Manley Tube Preamp": {
+            36: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=2)),
+            40: Control(encoder_led=LedColor.purple()),
+            38: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=5)),
+            42: Control(encoder_led=LedColor.purple()),
+            33: Control(button_led=LedColor.blue()),
+            37: Control(button_led=LedColor.white(), button=CtrlButton(steps=3)),
+            41: Control(button_led=LedColor.white()),
+            45: Control(button_led=LedColor.white()),
+            81: Control(button_led=LedColor.white()),
+        },
+
+        "UADx LA-3A Compressor": {
+            36: Control(encoder_led=LedColor.red()),
+            39: Control(encoder_led=LedColor.red()),
+            41: Control(encoder_led=LedColor.red()),
+            42: Control(encoder_led=LedColor.red()),
+            44: Control(button_led=LedColor.red(), button=CtrlButton(steps=3)),
+            47: Control(button_led=LedColor.red()),
+        },
+
+        "SSL Native Bus Compressor 2": {
+            32: Control(encoder_led=LedColor.blue()),
+            33: Control(encoder_led=LedColor.blue()),
+            36: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7, accel=False)),
+            37: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7, accel=False)),
+            40: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=7, accel=False)),
+            41: Control(button_led=LedColor.yellow(), button=CtrlButton(invert_intensity=True)),
+            44: Control(encoder_led=LedColor.blue()),
+            45: Control(encoder_led=LedColor.blue()),
+            # Side panel
+            42: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=3, accel=False)),
+            46: Control(button_led=LedColor.yellow()),
+            47: Control(button_led=LedColor.yellow()),
+        },
+
         "Maag EQ4": {
             44: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=21, accel=False)),
             45: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
@@ -378,6 +719,179 @@ mapping = {
             32: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
             36: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
             40: Control(encoder_led=LedColor.red(), button_led=LedColor.grey(), beautify_button=False, encoder=CtrlEncoder(steps=41)),
+        },
+
+        "Pre 1973": {
+            # L
+            32: Control(encoder_led=LedColor.cyan()),
+            36: Control(encoder_led=LedColor.cyan()),
+            37: Control(encoder_led=LedColor.cyan()),
+            40: Control(encoder_led=LedColor.cyan()),
+            41: Control(encoder_led=LedColor.cyan()),
+            44: Control(encoder_led=LedColor.blue()),
+            80: Control(button_led=LedColor.yellow()),
+            81: Control(button_led=LedColor.yellow()),
+            # R
+            34: Control(encoder_led=LedColor.cyan()),
+            38: Control(encoder_led=LedColor.cyan()),
+            39: Control(encoder_led=LedColor.cyan()),
+            42: Control(encoder_led=LedColor.cyan()),
+            43: Control(encoder_led=LedColor.cyan()),
+            46: Control(encoder_led=LedColor.blue()),
+            82: Control(button_led=LedColor.yellow()),
+            83: Control(button_led=LedColor.yellow()),
+            # AMP L
+            49: Control(encoder_led=LedColor.red()),
+            53: Control(encoder_led=LedColor.blue()),
+            57: Control(button_led=LedColor.cyan()),
+            # AMP R
+            50: Control(encoder_led=LedColor.red()),
+            54: Control(encoder_led=LedColor.blue()),
+            58: Control(button_led=LedColor.cyan()),
+            # Link / LR / MS
+            61: Control(button_led=LedColor.yellow()),
+            62: Control(button_led=LedColor.white()),
+            # Bypass
+            63: Control(button_led=LedColor.cyan(), button=CtrlButton(invert_intensity=True)),
+        },
+
+        "Comp TUBE-STA": {
+            40: Control(encoder_led=LedColor.orange()),
+            43: Control(encoder_led=LedColor.orange()),
+            41: Control(encoder_led=LedColor.white()),
+            37: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=3, accel=False)),
+            42: Control(button_led=LedColor.red()),
+            47: Control(encoder_led=LedColor.white()),
+            # Advanced
+            80: Control(button_led=LedColor.red()),
+            84: Control(encoder_led=LedColor.white()),
+            85: Control(encoder_led=LedColor.orange(), encoder=CtrlEncoder(steps=5, accel=False)),
+            86: Control(button_led=LedColor.red()),
+            87: Control(button_led=LedColor.green()), 
+            88: Control(encoder_led=LedColor.white()),
+            89: Control(encoder_led=LedColor.white()),
+            90: Control(encoder_led=LedColor.white()),
+            91: Control(encoder_led=LedColor.white()),
+        },
+
+        "Pre TridA": {
+            # L Top
+            33: Control(button_led=LedColor.yellow()),
+            34: Control(button_led=LedColor(r=0.5, g=0.5, b=0.0), encoder_led=LedColor.pink(), encoder=CtrlEncoder(steps=4, accel=False)),
+            35: Control(button_led=LedColor(r=0.5, g=0.5, b=0.0), encoder_led=LedColor.pink(), encoder=CtrlEncoder(steps=4, accel=False, invert=True)),
+            38: Control(encoder_led=LedColor.pink()),
+            39: Control(encoder_led=LedColor.pink()),
+            # L Bottom
+            42: Control(encoder_led=LedColor.pink(), encoder=CtrlEncoder(steps=4, accel=False)),
+            43: Control(encoder_led=LedColor.pink(), encoder=CtrlEncoder(steps=4, accel=False, invert=True)),
+            45: Control(button_led=LedColor.yellow()),
+            46: Control(button_led=LedColor(r=0.5, g=0.5, b=0.0), encoder_led=LedColor.pink()),
+            47: Control(button_led=LedColor(r=0.5, g=0.5, b=0.0), encoder_led=LedColor.pink()),
+            # R Top
+            48: Control(button_led=LedColor(r=0.5, g=0.5, b=0.0), encoder_led=LedColor.pink(), encoder=CtrlEncoder(steps=4, accel=False)),
+            49: Control(button_led=LedColor(r=0.5, g=0.5, b=0.0), encoder_led=LedColor.pink(), encoder=CtrlEncoder(steps=4, accel=False, invert=True)),
+            50: Control(button_led=LedColor.yellow()),
+            52: Control(encoder_led=LedColor.pink()),
+            53: Control(encoder_led=LedColor.pink()),
+            # R Bottom
+            56: Control(encoder_led=LedColor.pink(), encoder=CtrlEncoder(steps=4, accel=False)),
+            57: Control(encoder_led=LedColor.pink(), encoder=CtrlEncoder(steps=4, accel=False, invert=True)),
+            60: Control(button_led=LedColor(r=0.5, g=0.5, b=0.0), encoder_led=LedColor.pink()),
+            61: Control(button_led=LedColor(r=0.5, g=0.5, b=0.0), encoder_led=LedColor.pink()),
+            62: Control(button_led=LedColor.yellow()),
+            # Drive
+            81: Control(encoder_led=LedColor.pink()),
+            82: Control(encoder_led=LedColor.pink()),
+            85: Control(button_led=LedColor.red()),
+            86: Control(button_led=LedColor.red()),
+            89: Control(button_led=LedColor.green()),
+            90: Control(button_led=LedColor.green()),
+            93: Control(encoder_led=LedColor.purple()),
+            94: Control(encoder_led=LedColor.purple()),
+            91: Control(button_led=LedColor.yellow()),
+            95: Control(button_led=LedColor.yellow()),
+        },
+
+        "Tube-Tech Blue Tone": {
+            41: Control(encoder_led=LedColor.blue()),
+            42: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=8, accel=False)),
+            44: Control(encoder_led=LedColor.blue()),
+            45: Control(encoder_led=LedColor.blue()),
+            46: Control(encoder_led=LedColor.blue()),
+            47: Control(encoder_led=LedColor.blue()),
+        },
+
+        "AMEK EQ 200": {
+            # Power
+            32: Control(button_led=LedColor.blue()),
+            # Filters
+            36: Control(encoder_led=LedColor.white(), button_led=LedColor.red(), encoder=CtrlEncoder(invert_intensity=True), beautify_button=False),
+            40: Control(encoder_led=LedColor.white(), button_led=LedColor.red(), beautify_button=False),
+            # Low
+            33: Control(button_led=LedColor.red()),
+            37: Control(encoder_led=LedColor.red(), button_led=LedColor.grey()),
+            41: Control(encoder_led=LedColor.red()),
+            45: Control(encoder_led=LedColor.red()),
+            # Low M
+            34: Control(button_led=LedColor.red()),
+            38: Control(encoder_led=LedColor.yellow(), button_led=LedColor.grey()),
+            42: Control(encoder_led=LedColor.yellow()),
+            46: Control(encoder_led=LedColor.yellow()),
+            # Mid
+            35: Control(button_led=LedColor.red()),
+            39: Control(encoder_led=LedColor.green(), button_led=LedColor.grey()),
+            43: Control(encoder_led=LedColor.green()),
+            47: Control(encoder_led=LedColor.green()),
+            # High M
+            48: Control(button_led=LedColor.red()),
+            52: Control(encoder_led=LedColor.brown(), button_led=LedColor.grey()),
+            56: Control(encoder_led=LedColor.brown()),
+            60: Control(encoder_led=LedColor.brown()),
+            # High
+            49: Control(button_led=LedColor.red()),
+            53: Control(encoder_led=LedColor.blue(), button_led=LedColor.grey()),
+            57: Control(encoder_led=LedColor.blue()),
+            61: Control(encoder_led=LedColor.blue()),
+            # Mid panel
+            54: Control(encoder_led=LedColor.white(), button_led=LedColor.red()),
+            58: Control(button_led=LedColor.red()),
+            59: Control(button_led=LedColor.red()),
+            62: Control(button_led=LedColor.red()),
+            # Levels
+            80: Control(encoder_led=LedColor.white()),
+            83: Control(encoder_led=LedColor.white()),
+            # Mono maker
+            81: Control(encoder_led=LedColor.white(), button_led=LedColor.red()), 
+            82: Control(encoder_led=LedColor.white(), button_led=LedColor.red()), 
+            # THD
+            86: Control(encoder_led=LedColor.white(), button_led=LedColor.red()), 
+            # TMT
+            84: Control(button_led=LedColor.orange()),
+            85: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=20, accel=False)),
+            # MS/PL
+            89: Control(button_led=LedColor.red()),
+            90: Control(button_led=LedColor.red()),
+        },
+
+        "SSL LMC+": {
+            # Filters
+            37: Control(encoder_led=LedColor.white()),
+            38: Control(button_led=LedColor.yellow()),
+            39: Control(encoder_led=LedColor.white()),
+            # Amount
+            41: Control(button_led=LedColor.yellow()),
+            42: Control(encoder_led=LedColor.cyan(), encoder=CtrlEncoder(steps=101)),
+            43: Control(button_led=LedColor.yellow()),
+            # Routing
+            45: Control(button_led=LedColor.yellow()),
+            46: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=101)),
+            47: Control(button_led=LedColor.yellow()),
+
+            # IO
+            80: Control(button_led=LedColor.yellow(), button=CtrlButton(invert_intensity=True)),
+            81: Control(encoder_led=LedColor.white()),
+            82: Control(encoder_led=LedColor.white()),
+            83: Control(button_led=LedColor.yellow()),
         },
 
         ### Synths
