@@ -153,7 +153,8 @@ def port_13(msg: 'FlMidiMsg'):
             print(f"Unsupported midi msg type: {msg.status >> 4}")
     else:
         # Set led to off
-        set_led(midiChan, msg.controlNum, 0)
+        if 1 <= midiChan <= 2:
+            set_led(midiChan, msg.controlNum, 0)
         ui.setHintMsg(f"CH{midiChan} CC{msg.controlNum} - Not assigned")
 
 def process_linked_params_buttons(msg: 'FlMidiMsg', event_id):
