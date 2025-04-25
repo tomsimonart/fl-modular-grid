@@ -19,10 +19,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+from enum import Enum, auto
 from time import monotonic
 from typing import Optional
 
 import general
+import patterns
+import playlist
+import plugins
+import transport
+import channels
 import midi
 import mixer
 import device
@@ -142,7 +148,10 @@ def port_13(msg: 'FlMidiMsg'):
     """Implementation for 3x intech EN16 (0,0;0,1;1,0) + 1x TEK2 (1,1)"""
     midiChan = (msg.status & 0xF)
     event_id = get_mapped_event_id(msg)
-    if event_id is not None:        
+    if midiChan == 0:
+        # Mackie controls
+        process_daw_controls(msg, event_id)
+    elif event_id is not None:
         if msg.status >> 4 == 0xB:  # CC
             set_control_color(msg.controlNum)
             if midiChan == 2:
@@ -156,6 +165,188 @@ def port_13(msg: 'FlMidiMsg'):
         if 1 <= midiChan <= 2:
             set_led(midiChan, msg.controlNum, 0)
         ui.setHintMsg(f"CH{midiChan} CC{msg.controlNum} - Not assigned")
+
+def toggle_window(win_id: int, focus_dependent: bool = True):
+    """
+    Toggle window visibility and focus.
+    If focus_dependent is True then first focus the window.
+    Otherwise just toggle visibility.
+    """
+    if focus_dependent and ui.getFocused(win_id) == True:
+        ui.hideWindow(win_id) 
+    elif not focus_dependent and ui.getVisible(win_id):
+        ui.hideWindow(win_id)
+    else:
+        ui.showWindow(win_id)
+        ui.setFocused(win_id)
+    
+class FormID(Enum):
+    Mixer = 0
+    ChannelRack = 1
+    Playlist = 2
+    PianoRoll = 3
+    Browser = 4
+
+    def is_focused(self):
+        return ui.getFocusedFormID() == self.value
+
+L_JOG = 0
+R_JOG = 1
+L_JOG_CC = 56
+L_JOG_BTN = 32
+R_JOG_CC = 57
+R_JOG_BTN = 33
+THRES = 1000  # Step scroll threshold (grid endless steps)
+LP_THRES = 0.2  # Long press threshold (s)
+daw_context = {
+    '14bit_midi': {},
+    'shift_key': False,
+    'last_mixer_plugin': 0,
+    'endless_state': {  # Accuracy
+        L_JOG: 0,
+        R_JOG: 0,
+    },
+    'jog_mode': {  # Mode to apply
+        L_JOG: 0,
+        R_JOG: 0,
+    },
+    'long_press': {}
+}
+def process_daw_controls(msg: 'FlMidiMsg', event_id):
+    global daw_context
+
+    daw_context['14bit_midi'][msg.controlNum] = msg.controlVal
+    # L JOG
+    if msg.controlNum == L_JOG_CC + 32:
+        val = (daw_context['14bit_midi'][L_JOG_CC] << 7) + msg.controlVal
+        if val < 8192:
+            daw_context['endless_state'][L_JOG] -= (8192 - val)
+        else:
+            daw_context['endless_state'][L_JOG] += (val - 8192)
+        if abs(daw_context['endless_state'][L_JOG]) >= THRES:
+            jog_mode = daw_context['jog_mode'][L_JOG]
+            jog_val = daw_context['endless_state'][L_JOG]
+            if FormID.Playlist.is_focused():  # Playlist
+                if jog_mode == 0:
+                    if daw_context['shift_key']:
+                        ui.next() if jog_val > 0 else ui.previous()
+                    else:
+                        ui.jog(1 if jog_val > 0 else -1)
+                elif jog_mode == 1:
+                    ui.verZoom(1 if jog_val > 0 else -1)
+            if FormID.Mixer.is_focused():
+                ui.jog(1 if jog_val > 0 else -1)
+                daw_context['last_mixer_plugin'] = 0
+            else:
+                ui.jog(1 if jog_val > 0 else -1)
+            # elif FormID.ChannelRack.is_focused():  # Channel rack
+            #     ui.jog(1 if jog_val > 0 else -1)
+                # channels.showEditor(channels.selectedChannel())
+            # TODO acceleration here if we just operate thres depending on jog positive or negative value
+            daw_context['endless_state'][L_JOG] = 0
+    # R JOG
+    elif msg.controlNum == R_JOG_CC + 32:
+        val = (daw_context['14bit_midi'][R_JOG_CC] << 7) + msg.controlVal
+        if val < 8192:
+            daw_context['endless_state'][R_JOG] -= (8192 - val)
+        else:
+            daw_context['endless_state'][R_JOG] += (val - 8192)
+        if abs(daw_context['endless_state'][R_JOG]) >= THRES:
+            jog_mode = daw_context['jog_mode'][R_JOG]
+            jog_val = daw_context['endless_state'][R_JOG]
+            if FormID.ChannelRack.is_focused():
+                next_pattern = patterns.patternNumber() + (1 if jog_val > 0 else -1)
+                if next_pattern > 0 and not patterns.isPatternDefault(next_pattern):
+                    patterns.jumpToPattern(next_pattern)
+            elif FormID.Playlist.is_focused():
+                if jog_mode == 0:
+                    # TODO find better way to scroll as sometimes the patterns scroll and not the playlist
+                    ui.down() if jog_val > 0 else ui.up()
+                    # ui.scrollWindow(FormID.Playlist.value, playlist)
+                elif jog_mode == 1:
+                    ui.horZoom(1 if jog_val > 0 else -1)
+            elif FormID.Mixer.is_focused():
+                # Plugin ID = ((track << 6) + index) << 16
+                # mixer.getTrackPluginId(mixer.trackNumber())
+                print("Whatt")
+                mixer.focusEditor(
+                    mixer.trackNumber(),
+                    (daw_context['last_mixer_plugin'] + (1 if jog_val > 0 else -1) % 10)
+                )
+            else:  # On any other plugin
+                # mixer.getTrackPluginId()
+                currently_selected = ui.getFocusedFormID()
+                print(currently_selected)
+            # TODO acceleration here if we just operate thres depending on jog positive or negative value
+            daw_context['endless_state'][R_JOG] = 0
+
+    PLAY_PAUSE_BTN = 0
+    STOP_BTN = 1
+    PAT_SNG_BTN = 2
+    REC_BTN = 2
+    SHIFT_BTN = 3
+    MIXER_BTN = 4
+    BROWSER_BTN = 4
+    PLAYLIST_BTN = 5
+    CHANRACK_BTN = 6
+    PIANOROLL_BTN = 7
+
+    def is_long_press(msg: 'FlMidiMsg'):
+        initial_press, value = daw_context['long_press'][msg.controlNum]
+        if value != msg.controlVal and initial_press + LP_THRES < monotonic():
+            return True
+        return False
+
+    # Handle button presses
+    if msg.controlVal == 127:  # Button pressed
+        if msg.controlNum == PLAY_PAUSE_BTN:
+            if daw_context['shift_key']:
+                transport.stop()
+            transport.start()
+        elif msg.controlNum == STOP_BTN:
+            transport.stop()
+        elif msg.controlNum == SHIFT_BTN:
+            daw_context['shift_key'] = True
+
+    elif msg.controlVal == 0:  # Button released
+        if msg.controlNum == MIXER_BTN:
+            if is_long_press(msg):
+                toggle_window(FormID.Browser.value, focus_dependent=False)
+            else:
+                toggle_window(FormID.Mixer.value)
+        elif msg.controlNum == CHANRACK_BTN:
+            toggle_window(FormID.ChannelRack.value)
+        elif msg.controlNum == PLAYLIST_BTN:
+            toggle_window(FormID.Playlist.value)
+        elif msg.controlNum == PIANOROLL_BTN:
+            toggle_window(FormID.PianoRoll.value)
+        elif msg.controlNum == PAT_SNG_BTN:
+            if is_long_press(msg):
+                transport.record()
+            else:
+                transport.setLoopMode()
+        elif msg.controlNum == SHIFT_BTN:
+            daw_context['shift_key'] = False
+        # Jog btns
+        elif msg.controlNum == L_JOG_BTN:
+            if FormID.Playlist.is_focused():
+                daw_context['jog_mode'][L_JOG] = (daw_context['jog_mode'][L_JOG] + 1) % 2
+            elif FormID.ChannelRack.is_focused():
+                channels.focusEditor(channels.selectedChannel())
+                channels.showEditor(channels.selectedChannel(), 1)
+            else:  # Close any other window
+                channels.showEditor(channels.selectedChannel(), 0)
+        elif msg.controlNum == R_JOG_BTN:
+            if FormID.Playlist.is_focused():
+                daw_context['jog_mode'][R_JOG] = (daw_context['jog_mode'][R_JOG] + 1) % 2
+            if FormID.ChannelRack.is_focused():
+                target_fx_track = channels.getTargetFxTrack(channels.selectedChannel())
+                if target_fx_track != 0:
+                    ui.setFocused(FormID.Mixer.value)
+                    ui.showWindow(FormID.Mixer.value)
+                    mixer.setTrackNumber(target_fx_track)
+    msg.handled = True
+    daw_context['long_press'][msg.controlNum] = (monotonic(), msg.controlVal)
 
 def process_linked_params_buttons(msg: 'FlMidiMsg', event_id):
     global last_hint

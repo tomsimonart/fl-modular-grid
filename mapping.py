@@ -103,6 +103,10 @@ class LedColor:
     @classmethod
     def brown(cls):
         return cls(0.5, 0.25, 0)
+    
+    @classmethod
+    def lightgreen(cls):
+        return cls(0.5, 1, 0.5)
 
 
 @dataclass
@@ -311,34 +315,34 @@ mapping = {
         "Chandler Limited Germanium Comp": {
             # Left / Mid
             32: Control(button_led=LedColor(1, 1, 0.5)),
-            33: Control(encoder_led=LedColor.yellow()),
+            33: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=101)),
             34: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
             35: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
             48: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
-            49: Control(encoder_led=LedColor.yellow()),
-            50: Control(encoder_led=LedColor.white()),
-            51: Control(encoder_led=LedColor.white()),
+            49: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=101)),
+            50: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=101)),
+            51: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=101)),
             54: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
-            55: Control(encoder_led=LedColor.yellow()),
+            55: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=101)),
             # Right / Side
             40: Control(button_led=LedColor(1, 1, 0.5)),
-            41: Control(encoder_led=LedColor.yellow()),
+            41: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=101)),
             42: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
             43: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
             56: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
-            57: Control(encoder_led=LedColor.yellow()),
-            58: Control(encoder_led=LedColor.white()),
-            59: Control(encoder_led=LedColor.white()),
+            57: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=101)),
+            58: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=101)),
+            59: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=101)),
             62: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
-            63: Control(encoder_led=LedColor.yellow()), 
+            63: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=101)), 
             # Side panel
             44: Control(button_led=LedColor.white()),
-            45: Control(encoder_led=LedColor.white()),
+            45: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=101)),
             46: Control(button_led=LedColor.cyan()),
             47: Control(button_led=LedColor.cyan()),
             60: Control(button_led=LedColor.cyan()),
             61: Control(button_led=LedColor.cyan()),
-            83: Control(encoder_led=LedColor.yellow()),
+            83: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=101)),
         },
 
         "UADx SSL G Bus Compressor": {
@@ -524,10 +528,10 @@ mapping = {
 
         "UADx Empirical Labs Distressor": {
             # Controls
-            44: Control(encoder_led=LedColor.white()),
-            45: Control(encoder_led=LedColor.white()),
-            46: Control(encoder_led=LedColor.white()),
-            47: Control(encoder_led=LedColor.white()),
+            44: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=211)),
+            45: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=211)),
+            46: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=211)),
+            47: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=211)),
             60: Control(encoder_led=LedColor.white()),
             # Buttons
             40: Control(button_led=LedColor.red()),
@@ -685,6 +689,44 @@ mapping = {
             42: Control(encoder_led=LedColor.red()),
             44: Control(button_led=LedColor.red(), button=CtrlButton(steps=3)),
             47: Control(button_led=LedColor.red()),
+        },
+
+        "UADx Fairchild 670 Compressor": {
+            32: Control(button_led=LedColor.orange()),
+            33: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=3, accel=False)),
+            34: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            35: Control(encoder_led=LedColor.red()),
+            48: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=6, accel=False)),
+            37: Control(encoder_led=LedColor.yellow()),
+            52: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=2, accel=False)),
+            41: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=3, accel=False)),
+            42: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            43: Control(encoder_led=LedColor.red()),
+            56: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=6, accel=False)),
+            45: Control(encoder_led=LedColor.yellow()),
+            # Lower panel
+            80: Control(encoder_led=LedColor.red()),
+            81: Control(encoder_led=LedColor.red()),
+            82: Control(button_led=LedColor.white()),
+            83: Control(button_led=LedColor.white()),
+            84: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=7, accel=False)),
+            85: Control(encoder_led=LedColor.white()),
+            86: Control(encoder_led=LedColor.white()),
+            87: Control(encoder_led=LedColor.blue()),
+        },
+
+        "UADx Fairchild 660 Compressor": { 
+            32: Control(button_led=LedColor.orange()),
+            33: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=3, accel=False)),
+            34: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            35: Control(encoder_led=LedColor.red()),
+            48: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=6, accel=False)),
+            36: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=7, accel=False)),
+            37: Control(encoder_led=LedColor.yellow()),
+            40: Control(encoder_led=LedColor.red()),
+            41: Control(encoder_led=LedColor.white()),
+            42: Control(encoder_led=LedColor.red()),
+            56: Control(encoder_led=LedColor.blue()),
         },
 
         "SSL Native Bus Compressor 2": {
@@ -873,6 +915,51 @@ mapping = {
             90: Control(button_led=LedColor.red()),
         },
 
+        "Black Box Analog Design HG-2MS": {
+            # L / Mid
+            32: Control(encoder_led=LedColor.white()),
+            33: Control(encoder_led=LedColor.white()),
+            34: Control(encoder_led=LedColor.white()),
+            35: Control(encoder_led=LedColor.white()),
+            48: Control(encoder_led=LedColor.white()),
+            49: Control(encoder_led=LedColor.white()),
+            50: Control(encoder_led=LedColor.white()),
+            36: Control(button_led=LedColor.blue()),
+            37: Control(button_led=LedColor.blue()),
+            38: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=5, accel=False)),
+            39: Control(button_led=LedColor.blue(), encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=5, accel=False)),
+            53: Control(button_led=LedColor.blue()),
+            54: Control(button_led=LedColor.blue()),
+            # R / Side
+            40: Control(encoder_led=LedColor.white()),
+            41: Control(encoder_led=LedColor.white()),
+            42: Control(encoder_led=LedColor.white()),
+            43: Control(encoder_led=LedColor.white()),
+            56: Control(encoder_led=LedColor.white()),
+            57: Control(encoder_led=LedColor.white()),
+            58: Control(encoder_led=LedColor.white()),
+            44: Control(button_led=LedColor.blue()),
+            45: Control(button_led=LedColor.blue()),
+            46: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=5, accel=False)),
+            47: Control(button_led=LedColor.blue(), encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=5, accel=False)),
+            61: Control(button_led=LedColor.blue()),
+            62: Control(button_led=LedColor.blue()),
+            # BX strip
+            80: Control(button_led=LedColor.red()),
+            81: Control(encoder_led=LedColor.orange(), encoder=CtrlEncoder(steps=20, accel=False)),
+            82: Control(button_led=LedColor.blue()),
+            83: Control(button_led=LedColor.blue()),
+            85: Control(encoder_led=LedColor.white()),
+            86: Control(button_led=LedColor.blue(), button=CtrlButton(steps=3)),
+            88: Control(encoder_led=LedColor.white()),
+            89: Control(encoder_led=LedColor.white()),
+            90: Control(encoder_led=LedColor.white()),
+            91: Control(encoder_led=LedColor.white()),
+            # More
+            93: Control(button_led=LedColor.red()),
+            94: Control(button_led=LedColor.blue()),
+        },
+
         "SSL LMC+": {
             # Filters
             37: Control(encoder_led=LedColor.white()),
@@ -892,6 +979,173 @@ mapping = {
             81: Control(encoder_led=LedColor.white()),
             82: Control(encoder_led=LedColor.white()),
             83: Control(button_led=LedColor.yellow()),
+        },
+
+        "SSL Blitzer": {
+            32: Control(encoder_led=LedColor.white()),
+            33: Control(button_led=LedColor.purple()),
+            34: Control(button_led=LedColor.red()),
+            35: Control(encoder_led=LedColor.purple()),
+            48: Control(encoder_led=LedColor.white()),
+            37: Control(encoder_led=LedColor.purple()),
+            38: Control(encoder_led=LedColor.cyan(), encoder=CtrlEncoder(steps=9, accel=False)),
+            39: Control(encoder_led=LedColor.purple()),
+            41: Control(encoder_led=LedColor.purple()),
+            42: Control(button_led=LedColor.cyan()),
+            43: Control(encoder_led=LedColor.purple()),
+            44: Control(encoder_led=LedColor.blue()),
+            45: Control(encoder_led=LedColor.blue()),
+            46: Control(encoder_led=LedColor.blue()),
+            47: Control(encoder_led=LedColor.blue()),
+            60: Control(button_led=LedColor.purple()),
+        },
+
+        "TR5 EQ-73": {
+            40: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=5, accel=False)),
+            41: Control(encoder_led=LedColor.teal(), encoder=CtrlEncoder(steps=65)),
+            42: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=7, accel=False)),
+            43: Control(encoder_led=LedColor.teal(), encoder=CtrlEncoder(steps=65)),
+            56: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=45)),
+            44: Control(button_led=LedColor.yellow()),
+            45: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            46: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=22, accel=False)),
+            47: Control(encoder_led=LedColor.cyan(), encoder=CtrlEncoder(steps=5, accel=False)),
+            57: Control(button_led=LedColor.yellow()),
+            61: Control(button_led=LedColor.yellow()),
+        },
+
+        "RoyalCompressor": {
+            40: Control(encoder_led=LedColor.red()),
+            44: Control(button_led=LedColor.orange(), button=CtrlButton(invert_intensity=True)),
+            45: Control(encoder_led=LedColor.lightgreen()),
+            42: Control(encoder_led=LedColor.lightgreen(), encoder=CtrlEncoder(steps=3, accel=False)),
+            46: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=12, accel=False)),
+            43: Control(encoder_led=LedColor.lightgreen(), encoder=CtrlEncoder(steps=2, accel=False)),
+            47: Control(encoder_led=LedColor.lightgreen()),
+            60: Control(encoder_led=LedColor.lightgreen()),
+            57: Control(encoder_led=LedColor.lightgreen()),
+        },
+
+        "Chandler Limited Zener Limiter": {
+            # L
+            32: Control(button_led=LedColor.white()),
+            36: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            40: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            41: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=3, accel=False)),
+            42: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=6, accel=False)),
+            43: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            39: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=11, accel=False)),
+            35: Control(button_led=LedColor.white()),
+            # R
+            48: Control(button_led=LedColor.white()),
+            52: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            56: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            57: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=3, accel=False)),
+            58: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=6, accel=False)),
+            59: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            55: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=11, accel=False)),
+            51: Control(button_led=LedColor.white()),
+            # M
+            81: Control(button_led=LedColor.cyan()),
+            82: Control(button_led=LedColor.cyan()),
+            85: Control(button_led=LedColor.cyan()),
+            86: Control(button_led=LedColor.cyan()),
+            89: Control(button_led=LedColor.white()),
+            90: Control(encoder_led=LedColor.white()),
+        },
+
+        "Chandler Limited Curve Bender": {
+            # L
+            32: Control(encoder_led=LedColor.red(), button_led=LedColor.yellow(), encoder=CtrlEncoder(steps=8, accel=False)),
+            33: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=9, accel=False)),
+            34: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=9, accel=False)),
+            35: Control(encoder_led=LedColor.red(), button_led=LedColor.yellow(), encoder=CtrlEncoder(steps=9, accel=False)),
+            36: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            37: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            38: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            39: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            40: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            41: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            42: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            43: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            # R
+            48: Control(encoder_led=LedColor.red(), button_led=LedColor.yellow(), encoder=CtrlEncoder(steps=8, accel=False)),
+            49: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=9, accel=False)),
+            50: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=9, accel=False)),
+            51: Control(encoder_led=LedColor.red(), button_led=LedColor.yellow(), encoder=CtrlEncoder(steps=9, accel=False)),
+            52: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            53: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            54: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            55: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
+            56: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            57: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            58: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            59: Control(button_led=LedColor.yellow(), button=CtrlButton(steps=3)),
+            # Filter
+            80: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
+            84: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
+            83: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
+            87: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
+            # Mid
+            81: Control(button_led=LedColor.cyan()),
+            82: Control(button_led=LedColor.cyan()),
+            85: Control(button_led=LedColor.cyan()),
+            86: Control(button_led=LedColor.cyan()),
+            89: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+            90: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=21, accel=False)),
+        },
+
+        "Complexx": {
+            # L
+            80: Control(encoder_led=LedColor.purple()),
+            84: Control(encoder_led=LedColor.white()),
+            32: Control(encoder_led=LedColor.white()),
+            33: Control(encoder_led=LedColor.teal()),
+            34: Control(encoder_led=LedColor.yellow()),
+            35: Control(encoder_led=LedColor.red()),
+            36: Control(button_led=LedColor.orange(), button=CtrlButton(steps=3)),
+            37: Control(button_led=LedColor.white(), button=CtrlButton(steps=3)),
+            38: Control(button_led=LedColor.white(), button=CtrlButton(steps=3)),
+            39: Control(button_led=LedColor.teal(), button=CtrlButton(steps=3)),
+            40: Control(encoder_led=LedColor.white()),
+            41: Control(encoder_led=LedColor.teal()),
+            42: Control(encoder_led=LedColor.yellow()),
+            43: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=6, accel=False)),
+            # R
+            83: Control(encoder_led=LedColor.purple()),
+            87: Control(encoder_led=LedColor.white()),
+            51: Control(encoder_led=LedColor.white()),
+            50: Control(encoder_led=LedColor.teal()),
+            49: Control(encoder_led=LedColor.yellow()),
+            48: Control(encoder_led=LedColor.red()),
+            55: Control(button_led=LedColor.orange(), button=CtrlButton(steps=3)),
+            54: Control(button_led=LedColor.white(), button=CtrlButton(steps=3)),
+            53: Control(button_led=LedColor.white(), button=CtrlButton(steps=3)),
+            52: Control(button_led=LedColor.teal(), button=CtrlButton(steps=3)),
+            59: Control(encoder_led=LedColor.white()),
+            58: Control(encoder_led=LedColor.teal()),
+            57: Control(encoder_led=LedColor.yellow()),
+            56: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=6, accel=False)),
+            # M
+            85: Control(encoder_led=LedColor.white()),
+            86: Control(encoder_led=LedColor.white()),
+        },
+
+        "ADC1 Compressor": {
+            # L
+            32: Control(encoder_led=LedColor.red()),
+            33: Control(encoder_led=LedColor.teal(), encoder=CtrlEncoder(steps=4, accel=False)),
+            34: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
+            35: Control(encoder_led=LedColor.white()),
+            48: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
+            49: Control(encoder_led=LedColor.teal()),
+            # R
+            36: Control(encoder_led=LedColor.red()),
+            37: Control(encoder_led=LedColor.teal(), encoder=CtrlEncoder(steps=4, accel=False)),
+            38: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=6, accel=False)),
+            39: Control(encoder_led=LedColor.white()),
+            52: Control(encoder_led=LedColor.yellow(), encoder=CtrlEncoder(steps=11, accel=False)),
+            53: Control(encoder_led=LedColor.teal()),
         },
 
         ### Synths
