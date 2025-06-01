@@ -41,8 +41,17 @@ except ImportError:
 
 from mapping import Control, LedColor, mapping
 
+last_plugin = None
+synced = set()  # For all the colors that were already set
+idle_synced_default = set(
+    list(range(32, 32+16)) + list(range(48, 48+16)) + list(range(64, 64+16)) + list(range(80, 80+16)) + list(range(96, 96+16))
+)
+idle_synced = idle_synced_default.copy()
+last_synced = monotonic()
+control_sync = {}
 
 def get_plugin_control(cc) -> Control:
+    """Returns the mapped Control for a given cc for the last plugin used."""
     global mapping, last_plugin
     return mapping['plugins'].get(last_plugin, {}).get(
         cc, Control(
@@ -50,15 +59,14 @@ def get_plugin_control(cc) -> Control:
             beautify_button=False, beautify_encoder=False)
     )
 
+def get_assigned_controls() -> set[int]:
+    """Returns the list of all the cc's that are assigned for the last plugin used."""
+    global mapping, last_plugin
+    controls = mapping['plugins'].get(last_plugin, {})
+    return set(controls)
+
 def OnInit():
     print("init")
-
-last_plugin = None
-synced = set()  # For all the colors that were already set
-idle_synced_default = set(list(range(32, 32+16)) + list(range(48, 48+16)) + list(range(80, 80+16)))
-idle_synced = idle_synced_default.copy()
-last_synced = monotonic()
-control_sync = {}
 
 def OnIdle():
     SYNC_DELTA = 0
@@ -78,6 +86,12 @@ def OnRefresh(flags):
     if last_plugin != plugin and plugin != "":
         print("New plugin:", plugin)
         synced.clear()
+        # Batch clear module led intensity
+        for cc in range(0, len(idle_synced_default), 16):
+            device.midiOutMsg(0xB << 4, 2, cc, 0)
+        # Mark every non mapped controls as synced
+        synced.union(get_assigned_controls())
+        
         idle_synced = idle_synced_default.copy()
         last_plugin = plugin
     
@@ -118,6 +132,12 @@ def OnMidiIn(msg: 'FlMidiMsg'):
         return
 
 def set_control_color(cc: int, reset_intensity: bool = False):
+    """
+    Every time this function is called, it sets the color of
+    a control that did not have a color update yet after the plugin was changed.
+    This method is used because syncing everything at once could result in excessive
+    load on the intech modules and make FL studio lag.
+    """
     global synced, last_plugin, mapping, control_sync
     if cc in synced:
         return
@@ -145,7 +165,7 @@ def set_control_color(cc: int, reset_intensity: bool = False):
         set_led(2, cc, 0) 
 
 def port_13(msg: 'FlMidiMsg'):
-    """Implementation for 3x intech EN16 (0,0;0,1;1,0) + 1x TEK2 (1,1)"""
+    """Implementation for 5x intech EN16 (0,0;0,1;0,2;1,0;1,1) + 1x TEK2 (1,2)"""
     midiChan = (msg.status & 0xF)
     event_id = get_mapped_event_id(msg)
     if midiChan == 0:
@@ -162,7 +182,7 @@ def port_13(msg: 'FlMidiMsg'):
             print(f"Unsupported midi msg type: {msg.status >> 4}")
     else:
         # Set led to off
-        if 1 <= midiChan <= 2:
+        if 1 <= midiChan <= 2:  # FIXME what's this
             set_led(midiChan, msg.controlNum, 0)
         ui.setHintMsg(f"CH{midiChan} CC{msg.controlNum} - Not assigned")
 
