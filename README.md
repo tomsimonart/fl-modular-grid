@@ -30,8 +30,8 @@ EN16 TEK2
 On the EN16 System `Setup` page, in the setup, declare the following variables in a `self` block
 
 ```
-ci = 32+module_position_x()*16+(256-module_position_y())*48 % 128
-cx = (32+module_position_x()*16+(256-module_position_y())*48 % 128)+15
+ci = module_position_x()*16+(256-module_position_y())*48 % 128
+cx = (module_position_x()*16+(256-module_position_y())*48 % 128)+15
 lcc = -1
 ```
 
@@ -105,17 +105,18 @@ CC is defined depending on module position.
 
 In order to synchronize the led colors with the focused plugin, it was necessary to design a minimalistic protocol that would allow data exchange for all the knobs.
 
-Many experiments resulted in this extremely packed protocol with only 2 message types:
+Many experiments resulted in this extremely packed protocol with only these message types:
 
 1. Led intensity layer 1: midi `type=0xB0 | channel=6 | param1=7-bit cc | param2=7-bit intensity`
 2. Led intensity layer 2: midi `type=0xB0 | channel=8 | param1=7-bit cc | param2=7-bit intensity`
 3. Led color layer 1: midi `type=0xB0 | channel=7 | param1=7-bit color msb* | param2=7-bit color lsb*`
-3. Led color layer 2: midi `type=0xB0 | channel=9 | param1=7-bit color msb* | param2=7-bit color lsb*`
+4. Led color layer 2: midi `type=0xB0 | channel=9 | param1=7-bit color msb* | param2=7-bit color lsb*`
+5. Reset module intensity: midi `type=0xB0 | channel=2 | param1=not used | param2=not used`
 
 *led color: for the led color, sending 3 midi messages per led layer was too expensive, to reduce it to 1, some decisions were made:
 - Red: 5 bit value
 - Green: 5 bit value
-- Blue: 4 bit value (the human eye is less sensible to blue light than red and green, so resolution could be a bit less)
+- Blue: 4 bit value (the human eye is less sensible to blue light than red and green, so blue resolution was sacrificed due to size restrictions)
 
 Those colors are packed in a single midi message, the cc used is the last cc received for intensity. Because it's relevant to set intensity along with color nearly every time.
 

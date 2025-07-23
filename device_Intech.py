@@ -44,7 +44,7 @@ from mapping import Control, LedColor, mapping
 last_plugin = None
 synced = set()  # For all the colors that were already set
 idle_synced_default = set(
-    list(range(32, 32+16)) + list(range(48, 48+16)) + list(range(64, 64+16)) + list(range(80, 80+16)) + list(range(96, 96+16))
+    list(range(0, (5*16)-1))
 )
 idle_synced = idle_synced_default.copy()
 last_synced = monotonic()
@@ -186,6 +186,29 @@ def port_13(msg: 'FlMidiMsg'):
             set_led(midiChan, msg.controlNum, 0)
         ui.setHintMsg(f"CH{midiChan} CC{msg.controlNum} - Not assigned")
 
+        # TODO remove this section, it was testing for the special inc/dec bug of Fl studio, got fixed with a -32 offset
+        # Special case for 96 & 97
+        # msg_p = FlMidiMsg(msg.status, msg.data1, msg.data2)
+        # int_msg = construct_int_fl_midi_msg(msg.status, msg.data1, msg.data2, 13)
+        # print(int(msg))
+        # print(int_msg)
+        # device.processMIDICC(int_msg)
+
+        # print(msg)
+        # int_msg = construct_int_fl_midi_msg(msg.status, msg.data1, msg.data2, 13)
+        # print(msg.isIncrement)
+        # print("NOT ASSIGNED")
+        # msg.isIncrement = 0
+        # device.processMIDICC(msg)
+        # device.forwardMIDICC(int_msg, 0)
+        # msg.handled = True
+
+        # msg.handled = True
+        # print(msg.midiChan, msg.controlNum, msg.controlVal)
+
+def construct_int_fl_midi_msg(status: int, data1: int, data2: int, port: int = 0) -> int:
+    return status + (data1 << 8) + (data2 << 16) + (port << 24)
+
 def toggle_window(win_id: int, focus_dependent: bool = True):
     """
     Toggle window visibility and focus.
@@ -288,7 +311,6 @@ def process_daw_controls(msg: 'FlMidiMsg', event_id):
             elif FormID.Mixer.is_focused():
                 # Plugin ID = ((track << 6) + index) << 16
                 # mixer.getTrackPluginId(mixer.trackNumber())
-                print("Whatt")
                 mixer.focusEditor(
                     mixer.trackNumber(),
                     (daw_context['last_mixer_plugin'] + (1 if jog_val > 0 else -1) % 10)
