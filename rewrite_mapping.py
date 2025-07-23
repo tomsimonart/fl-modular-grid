@@ -17,7 +17,6 @@ def rewrite_file(input_path, output_path):
 
 # Write the mapping.py file with -32 offset
 # rewrite_file('Intech/mapping_old.py', 'Intech/mapping.py')
-rewrite_file('Intech/mapping_just_amek.txt', 'Intech/mapping_just_amek_out.txt')
 
 # Write the fl studio mapping with -32 offset
 
