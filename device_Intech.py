@@ -42,6 +42,7 @@ except ImportError:
 from mapping import Control, LedColor, mapping
 
 last_plugin = None
+last_id = None
 synced = set()  # For all the colors that were already set
 idle_synced_default = set(
     list(range(0, (5*16)-1))
@@ -81,8 +82,9 @@ def OnIdle():
 
 last_hint = None
 def OnRefresh(flags):
-    global last_plugin, synced, idle_synced, last_hint
+    global last_plugin, last_id, synced, idle_synced, last_hint
     plugin = ui.getFocusedPluginName()
+    id_ = ui.getFocusedFormID()
     if last_plugin != plugin and plugin != "":
         print("New plugin:", plugin)
         synced.clear()
@@ -93,7 +95,14 @@ def OnRefresh(flags):
         synced.union(get_assigned_controls())
         
         idle_synced = idle_synced_default.copy()
-        last_plugin = plugin
+    elif id_ != last_id:
+        print("New ID:", id_)
+        synced.clear()
+        # Mark every non mapped controls as synced
+        synced.union(get_assigned_controls())
+        idle_synced = idle_synced_default.copy()
+    last_plugin = plugin
+    last_id = id_
     
     # Display last hint if any, if not done here, value is not updated correctly
     if last_hint is not None:
@@ -245,6 +254,7 @@ daw_context = {
     '14bit_midi': {},
     'shift_key': False,
     'last_mixer_plugin': 0,
+    'last_focused_mixer_plugin': None,
     'endless_state': {  # Accuracy
         L_JOG: 0,
         R_JOG: 0,
@@ -279,7 +289,7 @@ def process_daw_controls(msg: 'FlMidiMsg', event_id):
                     ui.verZoom(1 if jog_val > 0 else -1)
             if FormID.Mixer.is_focused():
                 ui.jog(1 if jog_val > 0 else -1)
-                daw_context['last_mixer_plugin'] = 0
+                daw_context['last_mixer_plugin'] = -1
             else:
                 ui.jog(1 if jog_val > 0 else -1)
             # elif FormID.ChannelRack.is_focused():  # Channel rack
@@ -289,6 +299,7 @@ def process_daw_controls(msg: 'FlMidiMsg', event_id):
             daw_context['endless_state'][L_JOG] = 0
     # R JOG
     elif msg.controlNum == R_JOG_CC + 32:
+        # toggle_window(FormID.Mixer.value)
         val = (daw_context['14bit_midi'][R_JOG_CC] << 7) + msg.controlVal
         if val < 8192:
             daw_context['endless_state'][R_JOG] -= (8192 - val)
@@ -308,15 +319,70 @@ def process_daw_controls(msg: 'FlMidiMsg', event_id):
                     # ui.scrollWindow(FormID.Playlist.value, playlist)
                 elif jog_mode == 1:
                     ui.horZoom(1 if jog_val > 0 else -1)
-            elif FormID.Mixer.is_focused():
-                # Plugin ID = ((track << 6) + index) << 16
-                # mixer.getTrackPluginId(mixer.trackNumber())
-                mixer.focusEditor(
-                    mixer.trackNumber(),
-                    (daw_context['last_mixer_plugin'] + (1 if jog_val > 0 else -1) % 10)
-                )
+            elif FormID.PianoRoll.is_focused():
+                pass
+            
+            # elif FormID.Mixer.is_focused():
+
+            # # ===========================
+            # elif FormID.Mixer.is_focused():
+            #     # mixer.getTrackPluginId(mixer.trackNumber())
+
+            #     # Hide previously shown plugin
+            #     if daw_context['last_focused_mixer_plugin'] is not None:
+            #         # print("Hide", daw_context['last_focused_mixer_plugin'])
+            #         # ui.showWindow(daw_context['last_focused_mixer_plugin'])
+            #         # ui.setFocused(daw_context['last_focused_mixer_plugin'])
+            #         # print("UI.", ui.getFocusedFormCaption())
+            #         # ui.hideWindow(daw_context['last_focused_mixer_plugin'])
+            #         mixer.focusEditor(
+            #             mixer.trackNumber(),
+            #             daw_context['last_mixer_plugin']
+            #         )
+            #         transport.globalTransport(midi.FPT_Escape, 1, 2)
+            #         toggle_window(FormID.Mixer.value)
+
+            #     for _ in range(10):
+            #         try:
+            #             daw_context['last_mixer_plugin'] = (daw_context['last_mixer_plugin'] + (1 if jog_val > 0 else -1)) % 10
+            #             mixer.focusEditor(
+            #                 mixer.trackNumber(),
+            #                 daw_context['last_mixer_plugin'],
+            #             )
+            #             # TODO Display red rectangle around selected plugin
+            #         except:
+            #             pass
+            #         else:
+
+            #             # print(1, ui.getFocusedPluginName())
+            #             # current_new_plugin = ui.getFocusedFormID()
+            #             # toggle_window(daw_context['last_focused_mixer_plugin'])
+            #             # print(2, ui.getFocusedPluginName())
+            #             # toggle_window(current_new_plugin)
+            #             # print(3, ui.getFocusedPluginName())
+            #             # daw_context['last_focused_mixer_plugin'] = ui.getFocusedFormID()
+
+            #             # if daw_context['last_focused_mixer_plugin'] is not None:
+            #             #     print("Toggle:", daw_context['last_focused_mixer_plugin'])
+            #             #     toggle_window(daw_context['last_focused_mixer_plugin'])
+            #             # daw_context['last_focused_mixer_plugin'] = new_focused_form_id
+            #             # print(ui.getFocusedFormID(), '-', ui.getFocusedPluginName())
+
+            #             # Save last focused plugin
+            #             daw_context['last_focused_mixer_plugin'] = ui.getFocusedFormID()
+
+            #             # Re focus the mixer
+            #             toggle_window(FormID.Mixer.value)
+            #             break
+            #     # TODO re-focus the mixer and de-focus the last plugin
+            # # =====================
+
             else:  # On any other plugin
                 # mixer.getTrackPluginId()
+                # if daw_context['last_focused_mixer_plugin'] is not None:
+                #     ui.setFocused(daw_context['last_focused_mixer_plugin'])
+                #     transport.globalTransport(midi.FPT_Escape, 1)
+                transport.globalTransport(midi.FPT_MixerWindowJog, 1 if jog_val > 0 else -1, 2)
                 currently_selected = ui.getFocusedFormID()
                 print(currently_selected)
             # TODO acceleration here if we just operate thres depending on jog positive or negative value
@@ -333,16 +399,20 @@ def process_daw_controls(msg: 'FlMidiMsg', event_id):
     CHANRACK_BTN = 6
     PIANOROLL_BTN = 7
 
-    def is_long_press(msg: 'FlMidiMsg'):
+    def is_long_press(msg: 'FlMidiMsg', delay: float=LP_THRES):
+        """Checks that a button was pressed for a minimum duration of `delay` (seconds)."""
         initial_press, value = daw_context['long_press'][msg.controlNum]
-        if value != msg.controlVal and initial_press + LP_THRES < monotonic():
+        if value != msg.controlVal and initial_press + delay < monotonic():
             return True
         return False
+    
+    def shift():
+        return daw_context.get('shift_key', False)
 
     # Handle button presses
     if msg.controlVal == 127:  # Button pressed
         if msg.controlNum == PLAY_PAUSE_BTN:
-            if daw_context['shift_key']:
+            if shift():
                 transport.stop()
             transport.start()
         elif msg.controlNum == STOP_BTN:
@@ -352,10 +422,13 @@ def process_daw_controls(msg: 'FlMidiMsg', event_id):
 
     elif msg.controlVal == 0:  # Button released
         if msg.controlNum == MIXER_BTN:
-            if is_long_press(msg):
+            if shift():
                 toggle_window(FormID.Browser.value, focus_dependent=False)
             else:
-                toggle_window(FormID.Mixer.value)
+                if is_long_press(msg):
+                    transport.globalTransport(midi.FPT_F12, midi.PME_System)
+                else:
+                    toggle_window(FormID.Mixer.value)
         elif msg.controlNum == CHANRACK_BTN:
             toggle_window(FormID.ChannelRack.value)
         elif msg.controlNum == PLAYLIST_BTN:
