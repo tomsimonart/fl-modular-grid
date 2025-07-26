@@ -458,7 +458,7 @@ mapping = {
             9: Control(encoder_led=LedColor.yellow()), 
             10: Control(encoder_led=LedColor.yellow()), 
             12: Control(button_led=LedColor.white()),
-            13: Control(button_led=LedColor.white()),
+            13: Control(button_led=LedColor.white(), button=CtrlButton(steps=3)),
             15: Control(encoder_led=LedColor.white()), 
         },
 
@@ -744,6 +744,50 @@ mapping = {
             15: Control(button_led=LedColor.yellow()),
         },
 
+        "SSL Native Channel Strip 2": {
+            # Filter
+            4: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=61, invert=True, invert_intensity=True)),
+            5: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=61)),
+            1: Control(button_led=LedColor.orange()),
+            # EQ
+            8: Control(encoder_led=LedColor.red(), encoder=CtrlEncoder(steps=61, accel=False)),
+            9: Control(encoder_led=LedColor.red(), button_led=LedColor.yellow(), beautify_button=False),
+            12: Control(encoder_led=LedColor.green(), encoder=CtrlEncoder(steps=61, accel=False)),
+            13: Control(encoder_led=LedColor.green(), encoder=CtrlEncoder(steps=61, accel=False)),
+            48: Control(encoder_led=LedColor.green(), encoder=CtrlEncoder(steps=61, accel=False, invert=True, invert_intensity=True)),
+            49: Control(button_led=LedColor.orange()),
+            52: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=61, accel=False)),
+            57: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=61, accel=False)),
+            56: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=61, accel=False, invert=True, invert_intensity=True)),
+            53: Control(button_led=LedColor.orange()),
+            60: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=61, accel=False)),
+            61: Control(encoder_led=LedColor.purple(), button_led=LedColor.yellow(), beautify_button=False),
+            # Main panel
+            2: Control(button_led=LedColor.orange(), button=CtrlButton(invert_intensity=True)),
+            6: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=61, accel=False)),
+            7: Control(button_led=LedColor.orange()),
+            10: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=61, accel=False)),
+            11: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=61, accel=False)),
+            51: Control(encoder_led=LedColor.white()),
+            58: Control(button_led=LedColor.orange()),
+            62: Control(encoder_led=LedColor.green()),
+            # Dynamics
+            16: Control(encoder_led=LedColor.green()),
+            17: Control(button_led=LedColor.orange()),
+            21: Control(button_led=LedColor.orange()),
+            20: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=61, accel=False)),
+            24: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=61, accel=False)),
+            25: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=61, accel=False, invert=True, invert_intensity=True)),
+            28: Control(button_led=LedColor.orange()),
+            64: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=61, accel=False)),
+            65: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=61, accel=False)),
+            68: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=61, accel=False)),
+            69: Control(encoder_led=LedColor.purple(), encoder=CtrlEncoder(steps=61, accel=False)),
+            72: Control(button_led=LedColor.orange()),
+            76: Control(button_led=LedColor.orange()),
+
+        },
+
         "Maag EQ4": {
             12: Control(encoder_led=LedColor.white(), encoder=CtrlEncoder(steps=21, accel=False)),
             13: Control(encoder_led=LedColor.blue(), encoder=CtrlEncoder(steps=21, accel=False)),
@@ -1012,6 +1056,25 @@ mapping = {
             15: Control(encoder_led=LedColor.cyan(), encoder=CtrlEncoder(steps=5, accel=False)),
             25: Control(button_led=LedColor.yellow()),
             29: Control(button_led=LedColor.yellow()),
+        },
+
+        "TR5 EQ-PG": {
+            8: Control(encoder_led=LedColor.blue()),
+            9: Control(encoder_led=LedColor.blue()),
+            10: Control(encoder_led=LedColor.blue()),
+            11: Control(encoder_led=LedColor.blue()),
+            24: Control(encoder_led=LedColor.blue()),
+            25: Control(encoder_led=LedColor.blue()),
+            26: Control(encoder_led=LedColor.blue()),
+            27: Control(encoder_led=LedColor.blue()),
+            40: Control(encoder_led=LedColor.blue()),
+            41: Control(encoder_led=LedColor.blue()),
+            # Lower panel
+            13: Control(encoder_led=LedColor.blue()),
+            14: Control(button_led=LedColor.red()),
+            15: Control(button_led=LedColor.yellow()),
+            16: Control(encoder_led=LedColor.white()),
+            31: Control(button_led=LedColor.red()),
         },
 
         "RoyalCompressor": {
