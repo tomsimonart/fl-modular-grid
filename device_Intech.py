@@ -320,68 +320,8 @@ def process_daw_controls(msg: 'FlMidiMsg', event_id):
                 elif jog_mode == 1:
                     ui.horZoom(1 if jog_val > 0 else -1)
             elif FormID.PianoRoll.is_focused():
-                pass
-            
-            # elif FormID.Mixer.is_focused():
-
-            # # ===========================
-            # elif FormID.Mixer.is_focused():
-            #     # mixer.getTrackPluginId(mixer.trackNumber())
-
-            #     # Hide previously shown plugin
-            #     if daw_context['last_focused_mixer_plugin'] is not None:
-            #         # print("Hide", daw_context['last_focused_mixer_plugin'])
-            #         # ui.showWindow(daw_context['last_focused_mixer_plugin'])
-            #         # ui.setFocused(daw_context['last_focused_mixer_plugin'])
-            #         # print("UI.", ui.getFocusedFormCaption())
-            #         # ui.hideWindow(daw_context['last_focused_mixer_plugin'])
-            #         mixer.focusEditor(
-            #             mixer.trackNumber(),
-            #             daw_context['last_mixer_plugin']
-            #         )
-            #         transport.globalTransport(midi.FPT_Escape, 1, 2)
-            #         toggle_window(FormID.Mixer.value)
-
-            #     for _ in range(10):
-            #         try:
-            #             daw_context['last_mixer_plugin'] = (daw_context['last_mixer_plugin'] + (1 if jog_val > 0 else -1)) % 10
-            #             mixer.focusEditor(
-            #                 mixer.trackNumber(),
-            #                 daw_context['last_mixer_plugin'],
-            #             )
-            #             # TODO Display red rectangle around selected plugin
-            #         except:
-            #             pass
-            #         else:
-
-            #             # print(1, ui.getFocusedPluginName())
-            #             # current_new_plugin = ui.getFocusedFormID()
-            #             # toggle_window(daw_context['last_focused_mixer_plugin'])
-            #             # print(2, ui.getFocusedPluginName())
-            #             # toggle_window(current_new_plugin)
-            #             # print(3, ui.getFocusedPluginName())
-            #             # daw_context['last_focused_mixer_plugin'] = ui.getFocusedFormID()
-
-            #             # if daw_context['last_focused_mixer_plugin'] is not None:
-            #             #     print("Toggle:", daw_context['last_focused_mixer_plugin'])
-            #             #     toggle_window(daw_context['last_focused_mixer_plugin'])
-            #             # daw_context['last_focused_mixer_plugin'] = new_focused_form_id
-            #             # print(ui.getFocusedFormID(), '-', ui.getFocusedPluginName())
-
-            #             # Save last focused plugin
-            #             daw_context['last_focused_mixer_plugin'] = ui.getFocusedFormID()
-
-            #             # Re focus the mixer
-            #             toggle_window(FormID.Mixer.value)
-            #             break
-            #     # TODO re-focus the mixer and de-focus the last plugin
-            # # =====================
-
+                pass 
             else:  # On any other plugin
-                # mixer.getTrackPluginId()
-                # if daw_context['last_focused_mixer_plugin'] is not None:
-                #     ui.setFocused(daw_context['last_focused_mixer_plugin'])
-                #     transport.globalTransport(midi.FPT_Escape, 1)
                 transport.globalTransport(midi.FPT_MixerWindowJog, 1 if jog_val > 0 else -1, 2)
                 currently_selected = ui.getFocusedFormID()
                 print(currently_selected)
